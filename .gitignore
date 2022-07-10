@@ -153,4 +153,4 @@ dmypy.json
 cython_debug/
 
 .vscode/
-tests/fixtures/output/*
+tests/output/*.html
