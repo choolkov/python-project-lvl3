@@ -37,12 +37,13 @@ def download(url: str, path=DEFAULT_PATH) -> str:
     image_tags = soup.find_all('img')
     for tag in image_tags:
         # TODO is same domain
-        url = tag['src']
-        filename = get_name(url, get_extension(url))
-        img_content = download_content(url, text=False)
-        file_path = Path(files_path, filename)
-        write_content(file_path, img_content, bytes_=True)
-        tag['src'] = file_path
+        img_url = tag['src']
+        img_name = get_name(img_url, get_extension(img_url))
+        img_content = download_content(img_url, bytes_=True)
+        img_path = Path(files_path, img_name)
+        img_relative_path = img_path.relative_to(path)
+        write_content(img_path, img_content, bytes_=True)
+        tag['src'] = img_relative_path
     html_path = Path(path, html_name)
     write_content(html_path, soup.prettify())
 
