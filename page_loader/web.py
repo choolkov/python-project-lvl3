@@ -18,5 +18,5 @@ def in_same_domain(url1: str, url2: str) -> bool:
         (
             not (first_domain and second_domain),
             first_domain == second_domain,
-        )
+        ),
     )
