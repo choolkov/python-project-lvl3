@@ -18,20 +18,18 @@ def load_content(path: Path) -> str:
         return file.read()
 
 
-def write_content(path: Path, file_content: str, bytes_=False):
+def write_content(path: Path, file_content: str, binary=False):
     """
     Write content to file.
 
     Args:
         path: file path
-        file_content: text content
+        file_content: file content
+        binary: type of content
     """
-    if bytes_:
-        with open(path, 'wb') as file:  # NOQA: WPS110
-            file.write(file_content)
-    else:
-        with open(path, 'w') as file:  # NOQA: WPS110
-            file.write(file_content)
+    mode = 'wb' if binary else 'w'
+    with open(path, mode) as file:  # NOQA: WPS110
+        file.write(file_content)
 
 
 def make_dir(path: Path):

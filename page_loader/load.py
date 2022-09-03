@@ -12,6 +12,7 @@ from page_loader.naming import (
     get_html_name,
     get_name,
 )
+from page_loader.web import in_same_domain
 
 DEFAULT_PATH = os.getcwd()
 
@@ -38,12 +39,13 @@ def download(url: str, path=DEFAULT_PATH) -> str:
     for tag in image_tags:
         # TODO is same domain
         img_url = tag['src']
-        img_name = get_name(img_url, get_extension(img_url))
-        img_content = download_content(img_url, bytes_=True)
-        img_path = Path(files_path, img_name)
-        img_relative_path = img_path.relative_to(path)
-        write_content(img_path, img_content, bytes_=True)
-        tag['src'] = img_relative_path
+        if in_same_domain(url, img_url):
+            img_name = get_name(img_url, get_extension(img_url))
+            img_content = download_content(img_url, binary=True)
+            img_path = Path(files_path, img_name)
+            img_relative_path = img_path.relative_to(path)
+            write_content(img_path, img_content, binary=True)
+            tag['src'] = img_relative_path
     html_path = Path(path, html_name)
     write_content(html_path, soup.prettify())
 

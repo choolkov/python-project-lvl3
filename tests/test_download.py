@@ -1,52 +1,38 @@
 """Test for download function."""
 import os
 
-import pook
 import pytest
 from page_loader import download
 from tests.fixtures_paths import (
-    EXPECTED_PATH1,
-    EXPECTED_PATH2,
+    EXPECTED_PAGE,
+    EXPECTED_PATH,
+    IMAGE,
+    IMAGE2,
     OUTPUT_FOLDER,
     PAGE,
-    IMAGE,
 )
-from tests.fixtures_urls import IMAGE_URL, MOCK_URL1, MOCK_URL2
+from tests.fixtures_urls import IMAGE2_URL, IMAGE_URL, MOCK_URL
 from tests.io import get_content
 
 
 @pytest.fixture(autouse=True)
 def clean_files():
     """Clean output files before test."""
-    if os.path.isfile(EXPECTED_PATH1):
-        os.remove(EXPECTED_PATH1)
-    if os.path.isfile(EXPECTED_PATH2):
-        os.remove(EXPECTED_PATH2)
+    if os.path.isfile(EXPECTED_PATH):
+        os.remove(EXPECTED_PATH)
 
 
-@pytest.mark.parametrize(
-    'mock_url,output_folder,expected_path,content',
-    [
-        (MOCK_URL1, OUTPUT_FOLDER, EXPECTED_PATH1, get_content(PAGE)),
-        (MOCK_URL2, OUTPUT_FOLDER, EXPECTED_PATH2, get_content(PAGE)),
-    ],
-)
-@pook.on
-def test_download(mock_url, output_folder, expected_path, content):
-    """
-    Test for download function.
+@pytest.fixture
+def set_mocks(requests_mock):
+    requests_mock.get(MOCK_URL, text=get_content(PAGE))
+    requests_mock.get(IMAGE_URL, content=get_content(IMAGE, binary=True))
+    requests_mock.get(IMAGE2_URL, content=get_content(IMAGE2, binary=True))
 
-    Args:
-        mock_url: mocked url
-        output_folder: output folder path
-        expected_path: expected path
-        html_body: html body
-    """
-    pook.get(mock_url, response_body=get_content(IMAGE, bytes_=True))
-    pook.get(IMAGE_URL, content=get_content(IMAGE, bytes_=True))
 
-    filepath = download(mock_url, output_folder)
-    assert filepath == expected_path
+@pytest.mark.usefixtures('set_mocks')
+def test_download():
+    filepath = download(MOCK_URL, OUTPUT_FOLDER)
+    assert filepath == EXPECTED_PATH
 
-    filecontent = get_content(expected_path)
-    assert filecontent == content
+    filecontent = get_content(EXPECTED_PATH)
+    assert filecontent == get_content(EXPECTED_PAGE)
