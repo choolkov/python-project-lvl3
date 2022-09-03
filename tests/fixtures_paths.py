@@ -4,6 +4,8 @@ from pathlib import Path
 TESTS = Path(__file__).parent
 
 FIXTURES = Path(TESTS, 'fixtures')
+PAGE = Path(FIXTURES, 'example.html')
+IMAGE = Path(FIXTURES, 'name.png')
 
 OUTPUT_FOLDER = Path(TESTS, 'output')
 

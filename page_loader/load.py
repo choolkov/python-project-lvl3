@@ -1,78 +1,19 @@
 """Loader module."""
 import os
 from pathlib import Path
-from urllib.parse import urlparse
 
 import requests
-from page_loader.io import write_content
+from bs4 import BeautifulSoup
+from page_loader.io.fs import make_dir, write_content
+from page_loader.io.web import download_content
+from page_loader.naming import (
+    get_directory_name,
+    get_extension,
+    get_html_name,
+    get_name,
+)
 
 DEFAULT_PATH = os.getcwd()
-
-
-def normalize(string: str) -> str:
-    """
-    Return a string with non-alphabetic and non-numeric characters replaced.
-
-    Args:
-        string: string
-
-    Returns:
-        str
-    """
-    return ''.join(char if char.isalnum() else '-' for char in string)
-
-
-def remove_extension(path: str) -> str:
-    """
-    Return the URL path without extension, if any.
-
-    Args:
-        path: URL path
-
-    Returns:
-        str
-    """
-    extensions = [
-        '.htm',
-        '.html',
-        '.shtml',
-        '.asp',
-        '.aspx',
-        '.cgi',
-        '.jsp',
-        '.php',
-    ]
-    for extension in extensions:
-        if path.endswith(extension):
-            return path.replace(extension, '')
-    return path
-
-
-def get_html_name(url: str) -> str:
-    """
-    Return filename builded from URL.
-
-    Args:
-        url: URL
-
-    Returns:
-        str
-    """
-    parse_result = urlparse(url)
-    name = ''.join(
-        map(
-            normalize,
-            (
-                parse_result.netloc,
-                remove_extension(parse_result.path),
-                '-' if parse_result.query else '',
-                parse_result.query if parse_result.query else '',
-                '-' if parse_result.fragment else '',
-                parse_result.fragment if parse_result.fragment else '',
-            ),
-        ),
-    )
-    return '{0}.html'.format(name)
 
 
 def download(url: str, path=DEFAULT_PATH) -> str:
@@ -87,7 +28,22 @@ def download(url: str, path=DEFAULT_PATH) -> str:
         str: the path to the saved file
     """
     resonce = requests.get(url)
+
     html_name = get_html_name(url)
+    files_path = Path(path, get_directory_name(url))
+    make_dir(files_path)
+
+    soup = BeautifulSoup(resonce.text, 'html.parser')
+    image_tags = soup.find_all('img')
+    for tag in image_tags:
+        # TODO is same domain
+        url = tag['src']
+        filename = get_name(url, get_extension(url))
+        img_content = download_content(url, text=False)
+        file_path = Path(files_path, filename)
+        write_content(file_path, img_content, bytes_=True)
+        tag['src'] = file_path
     html_path = Path(path, html_name)
-    write_content(html_path, resonce.text)
+    write_content(html_path, soup.prettify())
+
     return html_path

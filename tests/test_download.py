@@ -1,13 +1,18 @@
 """Test for download function."""
 import os
-import time
 
 import pook
 import pytest
 from page_loader import download
-from page_loader.io import load_content
-from tests.fixtures_paths import EXPECTED_PATH1, EXPECTED_PATH2, OUTPUT_FOLDER
-from tests.fixtures_urls import MOCK_URL1, MOCK_URL2
+from tests.fixtures_paths import (
+    EXPECTED_PATH1,
+    EXPECTED_PATH2,
+    OUTPUT_FOLDER,
+    PAGE,
+    IMAGE,
+)
+from tests.fixtures_urls import IMAGE_URL, MOCK_URL1, MOCK_URL2
+from tests.io import get_content
 
 
 @pytest.fixture(autouse=True)
@@ -20,14 +25,14 @@ def clean_files():
 
 
 @pytest.mark.parametrize(
-    'mock_url,output_folder,expected_path,html_body',
+    'mock_url,output_folder,expected_path,content',
     [
-        (MOCK_URL1, OUTPUT_FOLDER, EXPECTED_PATH1, '<body>One</body>'),
-        (MOCK_URL2, OUTPUT_FOLDER, EXPECTED_PATH2, '<body>Two</body>'),
+        (MOCK_URL1, OUTPUT_FOLDER, EXPECTED_PATH1, get_content(PAGE)),
+        (MOCK_URL2, OUTPUT_FOLDER, EXPECTED_PATH2, get_content(PAGE)),
     ],
 )
 @pook.on
-def test_download(mock_url, output_folder, expected_path, html_body):
+def test_download(mock_url, output_folder, expected_path, content):
     """
     Test for download function.
 
@@ -37,10 +42,11 @@ def test_download(mock_url, output_folder, expected_path, html_body):
         expected_path: expected path
         html_body: html body
     """
-    pook.get(mock_url, response_body=html_body)
+    pook.get(mock_url, response_body=get_content(IMAGE, bytes_=True))
+    pook.get(IMAGE_URL, content=get_content(IMAGE, bytes_=True))
 
     filepath = download(mock_url, output_folder)
     assert filepath == expected_path
 
-    filecontent = load_content(expected_path)
-    assert filecontent == html_body
+    filecontent = get_content(expected_path)
+    assert filecontent == content

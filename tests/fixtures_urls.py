@@ -2,3 +2,4 @@
 
 MOCK_URL1 = 'http://test.com/page?user=developer&filter=false'
 MOCK_URL2 = 'http://test.com/page.php'
+IMAGE_URL = 'http://test.com/python.png'
