@@ -4,20 +4,6 @@ import os
 from pathlib import Path
 
 
-def load_content(path: Path) -> str:
-    """
-    Load content from file.
-
-    Args:
-        path: file path
-
-    Returns:
-        str
-    """
-    with open(path) as file:  # NOQA: WPS110
-        return file.read()
-
-
 def write_content(path: Path, file_content: str, binary=False):
     """
     Write content to file.
@@ -40,4 +26,4 @@ def make_dir(path: Path):
         path: directory path
     """
     if not path.is_dir():
-        os.mkdir(path)
+        os.makedirs(path, exist_ok=True)

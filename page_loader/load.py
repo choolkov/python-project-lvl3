@@ -1,6 +1,7 @@
 """Loader module."""
 import os
 from pathlib import Path
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -12,7 +13,7 @@ from page_loader.naming import (
     get_html_name,
     get_name,
 )
-from page_loader.web import in_same_domain
+from page_loader.web import Asset, get_assets, in_same_domain
 
 DEFAULT_PATH = os.getcwd()
 
@@ -28,24 +29,25 @@ def download(url: str, path=DEFAULT_PATH) -> str:  # NOQA WPS210
     Returns:
         str: the path to the saved file
     """
-    resonce = requests.get(url)
-
     html_name = get_html_name(url)
     files_path = Path(path, get_directory_name(url))
     make_dir(files_path)
 
+    resonce = requests.get(url)
     soup = BeautifulSoup(resonce.text, 'html.parser')
-    image_tags = soup.find_all('img')
-    for tag in image_tags:
-        img_url = tag['src']
-        if in_same_domain(url, img_url):
-            img_name = get_name(img_url, get_extension(img_url))
-            img_content = download_content(img_url, binary=True)
-            img_path = Path(files_path, img_name)
-            img_relative_path = img_path.relative_to(path)
-            write_content(img_path, img_content, binary=True)
-            tag['src'] = img_relative_path
+    assets: list[Asset] = get_assets(soup)
+
+    for asset in assets:
+        tag = asset.tag
+        if in_same_domain(url, asset.url):
+            asset_url = urljoin(url, asset.url)
+            file_name = get_name(asset_url, get_extension(asset_url))
+            file_content = download_content(asset_url, binary=asset.is_binary)
+            file_path = Path(files_path, file_name)
+            write_content(file_path, file_content, binary=asset.is_binary)
+            relative_path = file_path.relative_to(path)
+            tag[asset.attr] = relative_path
+
     html_path = Path(path, html_name)
     write_content(html_path, soup.prettify())
-
     return html_path
