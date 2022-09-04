@@ -17,7 +17,7 @@ from page_loader.web import in_same_domain
 DEFAULT_PATH = os.getcwd()
 
 
-def download(url: str, path=DEFAULT_PATH) -> str:
+def download(url: str, path=DEFAULT_PATH) -> str:  # NOQA WPS210
     """
     Download the html page and save it to the output path.
 
@@ -37,7 +37,6 @@ def download(url: str, path=DEFAULT_PATH) -> str:
     soup = BeautifulSoup(resonce.text, 'html.parser')
     image_tags = soup.find_all('img')
     for tag in image_tags:
-        # TODO is same domain
         img_url = tag['src']
         if in_same_domain(url, img_url):
             img_name = get_name(img_url, get_extension(img_url))

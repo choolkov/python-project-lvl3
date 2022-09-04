@@ -63,14 +63,11 @@ def get_name(url: str, postfix: str = '') -> str:
                 (
                     parse_result.netloc,
                     remove_extension(parse_result.path),
-                    '-' if parse_result.query else '',
-                    parse_result.query if parse_result.query else '',
-                    '-' if parse_result.fragment else '',
-                    parse_result.fragment if parse_result.fragment else '',
+                    parse_result.query,
+                    parse_result.fragment,
                 ),
             ),
-        )
-        + postfix
+        ) + postfix
     )
 
 
