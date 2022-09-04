@@ -17,8 +17,7 @@ install:
 	poetry install
 
 poetry-install:
-	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py --uninstall | python3 -
-	poetry config virtualenvs.in-project true
+	curl -sSL https://install.python-poetry.org | python3 -
 
 rebuild:
 	make build
