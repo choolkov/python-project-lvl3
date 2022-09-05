@@ -3,6 +3,8 @@
 import os
 from pathlib import Path
 
+from page_loader.logging import errors_logger
+
 
 def write_content(path: Path, file_content: str, binary=False):
     """
@@ -12,10 +14,19 @@ def write_content(path: Path, file_content: str, binary=False):
         path: file path
         file_content: file content
         binary: type of content
+
+    Raises:
+        PermissionError: if access denied
     """
     mode = 'wb' if binary else 'w'
-    with open(path, mode) as file:  # NOQA: WPS110
-        file.write(file_content)
+    try:
+        with open(path, mode) as file:  # NOQA: WPS110
+            file.write(file_content)
+    except PermissionError as pe:
+        errors_logger.error(
+            'Unable to save file {0} ({1})'.format(path, pe.strerror),
+        )
+        raise
 
 
 def make_dir(path: Path):
@@ -24,6 +35,14 @@ def make_dir(path: Path):
 
     Args:
         path: directory path
+
+    Raises:
+        PermissionError: if access denied
     """
-    if not path.is_dir():
+    try:
         os.makedirs(path, exist_ok=True)
+    except PermissionError as pe:
+        errors_logger.error(
+            'Unable to create directory {0} ({1})'.format(path, pe.strerror),
+        )
+        raise

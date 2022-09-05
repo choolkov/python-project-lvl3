@@ -2,7 +2,7 @@
 import argparse
 import pathlib
 
-from page_loader.load import DEFAULT_PATH, download
+from page_loader.loader import DEFAULT_PATH, download
 
 parser = argparse.ArgumentParser(
     description='Loads the HTML page.',
