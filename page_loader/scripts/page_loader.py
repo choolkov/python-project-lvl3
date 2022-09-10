@@ -9,7 +9,7 @@ from requests.exceptions import RequestException
 
 OK_CODE = 0
 REQUESTS_ERROR_CODE = 1
-ACCESS_ERROR_CODE = 2
+PERMISSION_ERROR_CODE = 2
 UNKNOWN_ERROR_CODE = 3
 
 parser = argparse.ArgumentParser(
@@ -57,7 +57,7 @@ def main():
         handle_exception(
             exception,
             'Access denied to output directory {0}'.format(args.output),
-            ACCESS_ERROR_CODE,
+            PERMISSION_ERROR_CODE,
         )
 
     except Exception as exception:

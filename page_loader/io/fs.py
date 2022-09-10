@@ -40,7 +40,7 @@ def make_dir(path: Path):
         PermissionError: if access denied
     """
     try:
-        os.makedirs(path, exist_ok=True)
+        os.mkdir(path)
     except PermissionError as pe:
         errors_logger.error(
             'Unable to create directory {0} ({1})'.format(path, pe.strerror),
