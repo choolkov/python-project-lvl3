@@ -1,5 +1,7 @@
 """Test for download function."""
+import os
 from pathlib import Path
+import stat
 import tempfile
 
 import pytest
@@ -69,3 +71,13 @@ def test_fail_download(temp_dir):
     except HTTPError as error:
         assert error.response.status_code == 404
         assert error.response.reason == 'Page not found'
+
+
+@pytest.mark.usefixtures('set_mocks')
+def test_permission_download(temp_dir):
+    with temp_dir as directory:
+        os.chmod(directory, stat.S_IRUSR)
+        try:
+            download(MOCK_URL, directory)
+        except PermissionError as error:
+            assert error.strerror == 'Permission denied'
