@@ -39,7 +39,7 @@ def set_mocks(requests_mock):
     requests_mock.get(STYLE3_URL, text=get_content(STYLE))
     requests_mock.get(SCRIPT1_URL, text=get_content(SCRIPT))
     requests_mock.get(SCRIPT2_URL, text=get_content(SCRIPT))
-    requests_mock.get(SCRIPT2_URL, text=get_content(SCRIPT))
+    requests_mock.get(SCRIPT3_URL, text=get_content(SCRIPT))
 
 
 @pytest.fixture
