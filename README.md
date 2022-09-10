@@ -8,4 +8,4 @@
 [![Linter check](https://github.com/Choolkov/python-project-lvl3/actions/workflows/linter-check.yml/badge.svg)](https://github.com/Choolkov/python-project-lvl3/actions/workflows/linter-check.yml)
 
 ### Asciinema:
-[![asciicast](https://asciinema.org/a/wrwvfHel7vWlYzugfOL9DDFp1.svg)](https://asciinema.org/a/wrwvfHel7vWlYzugfOL9DDFp1)
+[![asciicast](https://asciinema.org/a/KFO4vxLdT2ClrWtpkBSLknLQn.svg)](https://asciinema.org/a/KFO4vxLdT2ClrWtpkBSLknLQn)
