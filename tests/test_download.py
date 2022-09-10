@@ -1,4 +1,5 @@
 """Test for download function."""
+from pathlib import Path
 import tempfile
 
 import pytest
@@ -55,7 +56,7 @@ def temp_dir():
 def test_success_download(temp_dir):
     with temp_dir as directory:
         filepath = download(MOCK_URL, directory)
-        assert filepath.name == EXPECTED_FILENAME
+        assert Path(filepath).name == EXPECTED_FILENAME
 
         filecontent = get_content(filepath)
         assert filecontent == get_content(EXPECTED_PAGE)

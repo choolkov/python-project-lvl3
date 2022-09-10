@@ -28,7 +28,7 @@ def get_extension(url: str) -> str:
         str
     """
     path = urlparse(url).path
-    return Path(path).suffix
+    return Path(path).suffix or '.html'
 
 
 def remove_extension(path: str) -> str:

@@ -58,4 +58,4 @@ def download(url: str, path=DEFAULT_PATH) -> str:  # NOQA WPS210
     html_path = Path(path, get_html_name(url))
     write_content(html_path, soup.prettify())
     logger.info('Page with local paths to assets saved.')
-    return html_path
+    return str(html_path)
