@@ -48,9 +48,9 @@ def download(url: str, path=DEFAULT_PATH) -> str:  # NOQA WPS210
             tag = asset.tag
             asset_url = urljoin(url, asset.url)
             file_name = get_name(asset_url, get_extension(asset_url))
-            file_content = download_content(asset_url, binary=asset.is_binary)
+            file_content = download_content(asset_url, binary=True)
             file_path = Path(files_path, file_name)
-            write_content(file_path, file_content, binary=asset.is_binary)
+            write_content(file_path, file_content, binary=True)
             relative_path = file_path.relative_to(path)
             tag[asset.attr] = relative_path
         logger.info('Assets successfully loaded and saved.')
