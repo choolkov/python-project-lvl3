@@ -19,7 +19,7 @@ def normalize(string: str) -> str:
 
 def get_extension(url: str) -> str:
     """
-    Return the extension from URL, or empty string otherwise.
+    Return the extension from URL, or html extension otherwise.
 
     Args:
         url: URL

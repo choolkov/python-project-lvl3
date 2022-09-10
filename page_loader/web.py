@@ -10,7 +10,7 @@ tag_attrs = {
     'link': 'href',
     'script': 'src',
 }
-Asset = namedtuple('Asset', ['tag', 'attr', 'url', 'is_binary'])
+Asset = namedtuple('Asset', ['tag', 'url_attr', 'url'])
 
 
 def in_same_domain(url1: str, url2: str) -> bool:
@@ -44,7 +44,7 @@ def make_asset(tag: Tag) -> Asset:
     """
     url_attr = tag_attrs[tag.name]
     url = tag[url_attr]
-    return Asset(tag, url_attr, url, tag.name == 'img')
+    return Asset(tag, url_attr, url)
 
 
 def get_assets(html_page: BeautifulSoup) -> list:
