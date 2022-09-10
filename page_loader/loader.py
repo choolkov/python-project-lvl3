@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 from urllib.parse import urljoin
 
-import requests
 from bs4 import BeautifulSoup
 from page_loader.io.fs import make_dir, write_content
 from page_loader.io.web import download_content
@@ -30,10 +29,9 @@ def download(url: str, path=DEFAULT_PATH) -> str:  # NOQA WPS210
     Returns:
         str: the path to the saved file
     """
-    resonce = requests.get(url)
-    logger.info('Page loaded successfully.')
+    page = download_content(url)
 
-    soup = BeautifulSoup(resonce.text, 'html.parser')
+    soup = BeautifulSoup(page, 'html.parser')
 
     assets: list[Asset] = [
         asset for asset in get_assets(soup) if in_same_domain(url, asset.url)

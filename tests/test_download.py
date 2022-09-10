@@ -3,6 +3,7 @@ import tempfile
 
 import pytest
 from page_loader import download
+from requests.exceptions import HTTPError
 from tests.fixtures_paths import (
     EXPECTED_FILENAME,
     EXPECTED_PAGE,
@@ -32,15 +33,29 @@ def set_mocks(requests_mock):
 
 
 @pytest.fixture
+def set_fail_mocks(requests_mock):
+    requests_mock.get(MOCK_URL, status_code=404, reason='Page not found')
+
+
+@pytest.fixture
 def temp_dir():
     return tempfile.TemporaryDirectory()
 
 
 @pytest.mark.usefixtures('set_mocks')
-def test_download(temp_dir):
+def test_success_download(temp_dir):
     with temp_dir as directory:
         filepath = download(MOCK_URL, directory)
         assert filepath.name == EXPECTED_FILENAME
 
         filecontent = get_content(filepath)
         assert filecontent == get_content(EXPECTED_PAGE)
+
+
+@pytest.mark.usefixtures('set_fail_mocks')
+def test_fail_download(temp_dir):
+    try:
+        download(MOCK_URL)
+    except HTTPError as error:
+        assert error.response.status_code == 404
+        assert error.response.reason == 'Page not found'
