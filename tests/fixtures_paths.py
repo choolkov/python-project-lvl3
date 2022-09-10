@@ -10,5 +10,6 @@ EXPECTED_PAGE = Path(FIXTURES, 'expected_example.html')
 
 IMAGE = Path(FIXTURES, 'python.png')
 STYLE = Path(FIXTURES, 'style.css')
+SCRIPT = Path(FIXTURES, 'script.js')
 
 EXPECTED_FILENAME = 'test-com-page.html'

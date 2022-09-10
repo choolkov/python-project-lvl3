@@ -3,7 +3,7 @@
 from typing import Union
 
 import requests
-from page_loader.logging import errors_logger, logger
+from page_loader.logging import errors_logger
 from requests.exceptions import HTTPError
 
 
@@ -21,7 +21,6 @@ def download_content(url: str, binary: bool = False) -> Union[str, bytes]:
     Raises:
         HTTPError: if the response has an invalid status code
     """
-    logger.info('Downloading content from {0}'.format(url))
     responce = requests.get(url)
     try:
         responce.raise_for_status()
@@ -34,5 +33,4 @@ def download_content(url: str, binary: bool = False) -> Union[str, bytes]:
             ),
         )
         raise
-    logger.info('Content downloaded successfully.')
     return responce.content if binary else responce.text

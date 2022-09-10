@@ -9,12 +9,17 @@ from tests.fixtures_paths import (
     EXPECTED_PAGE,
     IMAGE,
     PAGE,
+    SCRIPT,
     STYLE,
 )
 from tests.fixtures_urls import (
+    IMAGE1_URL,
     IMAGE2_URL,
-    IMAGE_URL,
+    IMAGE3_URL,
     MOCK_URL,
+    SCRIPT1_URL,
+    SCRIPT2_URL,
+    SCRIPT3_URL,
     STYLE1_URL,
     STYLE2_URL,
     STYLE3_URL,
@@ -25,11 +30,15 @@ from tests.io import get_content
 @pytest.fixture
 def set_mocks(requests_mock):
     requests_mock.get(MOCK_URL, text=get_content(PAGE))
-    requests_mock.get(IMAGE_URL, content=get_content(IMAGE, binary=True))
+    requests_mock.get(IMAGE1_URL, content=get_content(IMAGE, binary=True))
     requests_mock.get(IMAGE2_URL, content=get_content(IMAGE, binary=True))
+    requests_mock.get(IMAGE3_URL, content=get_content(IMAGE, binary=True))
     requests_mock.get(STYLE1_URL, text=get_content(STYLE))
     requests_mock.get(STYLE2_URL, text=get_content(STYLE))
     requests_mock.get(STYLE3_URL, text=get_content(STYLE))
+    requests_mock.get(SCRIPT1_URL, text=get_content(SCRIPT))
+    requests_mock.get(SCRIPT2_URL, text=get_content(SCRIPT))
+    requests_mock.get(SCRIPT2_URL, text=get_content(SCRIPT))
 
 
 @pytest.fixture
