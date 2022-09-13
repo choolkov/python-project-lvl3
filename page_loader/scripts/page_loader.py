@@ -10,7 +10,8 @@ from requests.exceptions import RequestException
 OK_CODE = 0
 REQUESTS_ERROR_CODE = 1
 PERMISSION_ERROR_CODE = 2
-UNKNOWN_ERROR_CODE = 3
+DIRECTORY_NOT_EXIST_ERROR_CODE = 3
+UNKNOWN_ERROR_CODE = 4
 
 parser = argparse.ArgumentParser(
     description='Loads the HTML page.',
@@ -42,8 +43,15 @@ def handle_exception(exception: Exception, message: str, code: int):
 
 
 def main():
-    """Run download and print full path to downloaded file."""
-    try:
+    """Run download and print full path to downloaded file.
+
+    Raises:
+        RequestException
+        PermissionError
+        FileNotFoundError
+        Exception
+    """
+    try:  # NOQA: WPS225
         print(download(args.url, args.output))
 
     except RequestException as exception:
@@ -58,6 +66,13 @@ def main():
             exception,
             'Access denied to output directory {0}'.format(args.output),
             PERMISSION_ERROR_CODE,
+        )
+
+    except FileNotFoundError as exception:
+        handle_exception(
+            exception,
+            'Output directory {0} does not exist'.format(args.output),
+            DIRECTORY_NOT_EXIST_ERROR_CODE,
         )
 
     except Exception as exception:

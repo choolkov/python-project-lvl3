@@ -74,10 +74,20 @@ def test_fail_download(temp_dir):
 
 
 @pytest.mark.usefixtures('set_mocks')
-def test_permission_download(temp_dir):
+def test_download_directory_permission(temp_dir):
     with temp_dir as directory:
         os.chmod(directory, stat.S_IRUSR)
         try:
             download(MOCK_URL, directory)
         except PermissionError as error:
             assert error.strerror == 'Permission denied'
+
+
+@pytest.mark.usefixtures('set_mocks')
+def test_download_directory_not_exist(temp_dir):
+    with temp_dir as directory:
+        os.rmdir(directory)
+        try:
+            download(MOCK_URL, directory)
+        except FileNotFoundError as error:
+            assert error.strerror == 'No such file or directory'

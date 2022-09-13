@@ -29,11 +29,19 @@ def make_dir(path: Path):
 
     Raises:
         PermissionError: if access denied
+        FileNotFoundError: if output directory does not exist
     """
     try:
         os.mkdir(path)
-    except PermissionError as pe:
+    except PermissionError as error:
         errors_logger.error(
-            'Unable to create directory {0} ({1})'.format(path, pe.strerror),
+            'Unable to create directory {0} ({1})'.format(path, error.strerror),
+        )
+        raise
+    except FileNotFoundError as error:
+        errors_logger.error(
+            'Output directory {0} does not exist ({1})'.format(
+                path, error.strerror,
+            ),
         )
         raise
