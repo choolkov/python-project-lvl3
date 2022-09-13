@@ -13,20 +13,27 @@ PERMISSION_ERROR_CODE = 2
 DIRECTORY_NOT_EXIST_ERROR_CODE = 3
 UNKNOWN_ERROR_CODE = 4
 
-parser = argparse.ArgumentParser(
-    description='Loads the HTML page.',
-)
 
-parser.add_argument(
-    '-o',
-    '--output',
-    metavar='OUTPUT',
-    help='set output path',
-    type=pathlib.Path,
-    default=DEFAULT_PATH,
-)
-parser.add_argument('url', help='page URL', type=str)
-args = parser.parse_args()
+def get_args() -> argparse.Namespace:
+    """Parse command-line and return arguments.
+
+    Returns:
+        argparse.Namespace
+    """
+    parser = argparse.ArgumentParser(
+        description='Loads the HTML page.',
+    )
+
+    parser.add_argument(
+        '-o',
+        '--output',
+        metavar='OUTPUT',
+        help='set output path',
+        type=pathlib.Path,
+        default=DEFAULT_PATH,
+    )
+    parser.add_argument('url', help='page URL', type=str)
+    return parser.parse_args()
 
 
 def handle_exception(exception: Exception, message: str, code: int):
@@ -51,6 +58,7 @@ def main():
         FileNotFoundError
         Exception
     """
+    args = get_args()
     try:  # NOQA: WPS225
         print(download(args.url, args.output))
 
