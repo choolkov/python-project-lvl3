@@ -1,8 +1,8 @@
 """Test for download function."""
 import os
-from pathlib import Path
 import stat
 import tempfile
+from pathlib import Path
 
 import pytest
 from page_loader import download
@@ -20,6 +20,8 @@ from tests.fixtures_urls import (
     IMAGE2_URL,
     IMAGE3_URL,
     MOCK_URL,
+    MOCK_400,
+    MOCK_500,
     SCRIPT1_URL,
     SCRIPT2_URL,
     SCRIPT3_URL,
@@ -46,7 +48,8 @@ def set_mocks(requests_mock):
 
 @pytest.fixture
 def set_fail_mocks(requests_mock):
-    requests_mock.get(MOCK_URL, status_code=404, reason='Page not found')
+    requests_mock.get(MOCK_400, status_code=400, reason='Bad Request')
+    requests_mock.get(MOCK_500, status_code=500, reason='Server Error')
 
 
 @pytest.fixture
@@ -64,13 +67,20 @@ def test_success_download(temp_dir):
         assert filecontent == get_content(EXPECTED_PAGE)
 
 
+@pytest.mark.parametrize(
+    ('url', 'code', 'reason'),
+    [
+        (MOCK_400, 400, 'Bad Request'),
+        (MOCK_500, 500, 'Server Error'),
+    ],
+)
 @pytest.mark.usefixtures('set_fail_mocks')
-def test_fail_download(temp_dir):
+def test_fail_download(temp_dir, url, code, reason):
     try:
-        download(MOCK_URL)
+        download(url)
     except HTTPError as error:
-        assert error.response.status_code == 404
-        assert error.response.reason == 'Page not found'
+        assert error.response.status_code == code
+        assert error.response.reason == reason
 
 
 @pytest.mark.usefixtures('set_mocks')

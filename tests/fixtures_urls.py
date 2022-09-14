@@ -1,6 +1,8 @@
 """URL fixtures."""
 
 MOCK_URL = 'http://test.com/page.php'
+MOCK_400 = 'http://test.com/400'
+MOCK_500 = 'http://test.com/500'
 
 IMAGE1_URL = 'http://test.com/python.png'
 IMAGE2_URL = 'http://test.com/ruby.png'
