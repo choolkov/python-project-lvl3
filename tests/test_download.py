@@ -10,6 +10,7 @@ from requests.exceptions import HTTPError
 from tests.fixtures_paths import (
     EXPECTED_FILENAME,
     EXPECTED_PAGE,
+    EXPECTED_RESOURCES_DIR_NAME,
     IMAGE,
     PAGE,
     SCRIPT,
@@ -19,9 +20,9 @@ from tests.fixtures_urls import (
     IMAGE1_URL,
     IMAGE2_URL,
     IMAGE3_URL,
-    MOCK_URL,
     MOCK_400,
     MOCK_500,
+    MOCK_URL,
     SCRIPT1_URL,
     SCRIPT2_URL,
     SCRIPT3_URL,
@@ -57,14 +58,40 @@ def temp_dir():
     return tempfile.TemporaryDirectory()
 
 
+@pytest.fixture
+def expected_resources():
+    return {
+        'test-com-assets-menu.css': STYLE,
+        'test-com-assets-application.css': STYLE,
+        'test-com-python.png': IMAGE,
+        'test-com-ruby.png': IMAGE,
+        'test-com-assets-script.js': SCRIPT,
+        'test-com-assets-run.js': SCRIPT,
+    }
+
+
 @pytest.mark.usefixtures('set_mocks')
-def test_success_download(temp_dir):
+def test_success_download(temp_dir, expected_resources):
     with temp_dir as directory:
         filepath = download(MOCK_URL, directory)
         assert Path(filepath).name == EXPECTED_FILENAME
 
         filecontent = get_content(filepath)
         assert filecontent == get_content(EXPECTED_PAGE)
+
+        resources_dir = Path(filepath).parent / EXPECTED_RESOURCES_DIR_NAME
+        assert resources_dir.exists()
+
+        resources_list = os.listdir(resources_dir)
+        assert len(resources_list) == len(expected_resources)
+
+        for resource_filename, (expected_filename, path) in zip(
+            sorted(resources_list), sorted(expected_resources.items())
+        ):
+            assert resource_filename == expected_filename
+            assert get_content(
+                resources_dir / resource_filename, binary=True
+            ) == get_content(path, binary=True)
 
 
 @pytest.mark.parametrize(

@@ -13,3 +13,4 @@ STYLE = Path(FIXTURES, 'style.css')
 SCRIPT = Path(FIXTURES, 'script.js')
 
 EXPECTED_FILENAME = 'test-com-page.html'
+EXPECTED_RESOURCES_DIR_NAME = 'test-com-page_files'
