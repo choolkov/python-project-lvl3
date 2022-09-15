@@ -73,24 +73,24 @@ def expected_resources():
 @pytest.mark.usefixtures('set_mocks')
 def test_success_download(temp_dir, expected_resources):
     with temp_dir as directory:
-        filepath = download(MOCK_URL, directory)
-        assert Path(filepath).name == EXPECTED_FILENAME
+        filepath = Path(download(MOCK_URL, directory))
+        assert filepath.name == EXPECTED_FILENAME
 
         filecontent = get_content(filepath)
         assert filecontent == get_content(EXPECTED_PAGE)
 
-        resources_dir = Path(filepath).parent / EXPECTED_RESOURCES_DIR_NAME
+        resources_dir = filepath.parent / EXPECTED_RESOURCES_DIR_NAME
         assert resources_dir.exists()
 
         resources_list = os.listdir(resources_dir)
         assert len(resources_list) == len(expected_resources)
 
         for resource_filename, (expected_filename, path) in zip(
-            sorted(resources_list), sorted(expected_resources.items())
+            sorted(resources_list), sorted(expected_resources.items()),
         ):
             assert resource_filename == expected_filename
             assert get_content(
-                resources_dir / resource_filename, binary=True
+                resources_dir / resource_filename, binary=True,
             ) == get_content(path, binary=True)
 
 
@@ -102,7 +102,7 @@ def test_success_download(temp_dir, expected_resources):
     ],
 )
 @pytest.mark.usefixtures('set_fail_mocks')
-def test_fail_download(temp_dir, url, code, reason):
+def test_fail_download(url, code, reason):
     try:
         download(url)
     except HTTPError as error:
