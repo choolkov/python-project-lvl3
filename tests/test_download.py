@@ -55,7 +55,8 @@ def set_fail_mocks(requests_mock):
 
 @pytest.fixture
 def temp_dir():
-    return tempfile.TemporaryDirectory()
+    with tempfile.TemporaryDirectory() as directory:
+        yield directory
 
 
 @pytest.fixture
@@ -72,26 +73,25 @@ def expected_resources():
 
 @pytest.mark.usefixtures('set_mocks')
 def test_success_download(temp_dir, expected_resources):
-    with temp_dir as directory:
-        filepath = Path(download(MOCK_URL, directory))
-        assert filepath.name == EXPECTED_FILENAME
+    filepath = Path(download(MOCK_URL, temp_dir))
+    assert filepath.name == EXPECTED_FILENAME
 
-        filecontent = get_content(filepath)
-        assert filecontent == get_content(EXPECTED_PAGE)
+    filecontent = get_content(filepath)
+    assert filecontent == get_content(EXPECTED_PAGE)
 
-        resources_dir = filepath.parent / EXPECTED_RESOURCES_DIR_NAME
-        assert resources_dir.exists()
+    resources_dir = filepath.parent / EXPECTED_RESOURCES_DIR_NAME
+    assert resources_dir.exists()
 
-        resources_list = os.listdir(resources_dir)
-        assert len(resources_list) == len(expected_resources)
+    resources_list = os.listdir(resources_dir)
+    assert len(resources_list) == len(expected_resources)
 
-        for resource_filename, (expected_filename, path) in zip(
-            sorted(resources_list), sorted(expected_resources.items()),
-        ):
-            assert resource_filename == expected_filename
-            assert get_content(
-                resources_dir / resource_filename, binary=True,
-            ) == get_content(path, binary=True)
+    for resource_filename, (expected_filename, path) in zip(
+        sorted(resources_list), sorted(expected_resources.items()),
+    ):
+        assert resource_filename == expected_filename
+        assert get_content(
+            resources_dir / resource_filename, binary=True,
+        ) == get_content(path, binary=True)
 
 
 @pytest.mark.parametrize(
@@ -112,19 +112,17 @@ def test_fail_download(url, code, reason):
 
 @pytest.mark.usefixtures('set_mocks')
 def test_download_directory_permission(temp_dir):
-    with temp_dir as directory:
-        os.chmod(directory, stat.S_IRUSR)
-        try:
-            download(MOCK_URL, directory)
-        except PermissionError as error:
-            assert error.strerror == 'Permission denied'
+    os.chmod(temp_dir, stat.S_IRUSR)
+    try:
+        download(MOCK_URL, temp_dir)
+    except PermissionError as error:
+        assert error.strerror == 'Permission denied'
 
 
 @pytest.mark.usefixtures('set_mocks')
 def test_download_directory_not_exist(temp_dir):
-    with temp_dir as directory:
-        os.rmdir(directory)
-        try:
-            download(MOCK_URL, directory)
-        except FileNotFoundError as error:
-            assert error.strerror == 'No such file or directory'
+    os.rmdir(temp_dir)
+    try:
+        download(MOCK_URL, temp_dir)
+    except FileNotFoundError as error:
+        assert error.strerror == 'No such file or directory'
