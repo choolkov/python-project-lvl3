@@ -95,34 +95,28 @@ def test_success_download(temp_dir, expected_resources):
 
 
 @pytest.mark.parametrize(
-    ('url', 'code', 'reason'),
+    ('url', 'error_value'),
     [
-        (MOCK_400, 400, 'Bad Request'),
-        (MOCK_500, 500, 'Server Error'),
+        (MOCK_400, f'400 Client Error: Bad Request for url: {MOCK_400}'),
+        (MOCK_500, f'500 Server Error: Server Error for url: {MOCK_500}'),
     ],
 )
 @pytest.mark.usefixtures('set_fail_mocks')
-def test_fail_download(url, code, reason):
-    try:
+def test_fail_download(url, error_value):
+    with pytest.raises(HTTPError) as error:
         download(url)
-    except HTTPError as error:
-        assert error.response.status_code == code
-        assert error.response.reason == reason
+    assert str(error.value) == error_value
 
 
 @pytest.mark.usefixtures('set_mocks')
 def test_download_directory_permission(temp_dir):
     os.chmod(temp_dir, stat.S_IRUSR)
-    try:
+    with pytest.raises(PermissionError):
         download(MOCK_URL, temp_dir)
-    except PermissionError as error:
-        assert error.strerror == 'Permission denied'
 
 
 @pytest.mark.usefixtures('set_mocks')
 def test_download_directory_not_exist(temp_dir):
     os.rmdir(temp_dir)
-    try:
+    with pytest.raises(FileNotFoundError):
         download(MOCK_URL, temp_dir)
-    except FileNotFoundError as error:
-        assert error.strerror == 'No such file or directory'
